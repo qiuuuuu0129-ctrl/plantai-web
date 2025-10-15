@@ -342,36 +342,42 @@ def api_settings():
 @app.route("/api/control", methods=["POST"])
 @login_required
 def api_control():
-    p = request.get_json(force=True, silent=True) or {}
-    # TODO: 对接你的真实控制器（pump / light / ws）
-    # 安全限制
-    if "pump_duration" in p:
-        p["pump_duration"] = max(1, min(30, int(p["pump_duration"])))
-    if "brightness" in p:
-        p["brightness"] = max(0, min(100, int(p["brightness"])))
-    if "ws_brightness" in p:
-        p["ws_brightness"] = max(0, min(255, int(p["ws_brightness"])))
-    if "ws_duration" in p:
-        p["ws_duration"] = max(1, min(60, int(p["ws_duration"])))
+    """前端发送控制请求 -> 控制硬件"""
+    data = request.get_json(force=True, silent=True) or {}
+    result = {"pump": None, "light": None, "ws": None}
 
-    # 模拟执行 + 写动作日志（实际可替换为硬件调用）
-    detail = []
-    if p.get("pump") is not None:
-        state = "on" if p["pump"] else "off"
-        sec = p.get("pump_duration", 0)
-        detail.append(f"pump:{state}({sec}s)")
-    if p.get("light") is not None:
-        state = "on" if p["light"] else "off"
-        bri = p.get("brightness", "")
-        detail.append(f"light:{state}({bri}%)")
-    if p.get("ws_enable") is not None:
-        state = "on" if p["ws_enable"] else "off"
-        detail.append(f"ws:{state}({p.get('ws_mode','white')},{p.get('ws_brightness',128)},{p.get('ws_duration',10)}s)")
+    try:
+        # 水泵控制
+        if "pump" in data:
+            if data["pump"]:
+                dur = max(1, min(30, int(data.get("pump_duration", 3))))
+                _actuate_pump(dur)
+                result["pump"] = f"ON {dur}s"
+            else:
+                pump.off()
+  
+        # WS2812 控制
+        if "ws_enable" in data:
+            if data["ws_enable"]:
+                mode = data.get("ws_mode", "white")
+                bri = max(0, min(255, int(data.get("ws_brightness", 128))))
+                dur = max(1, min(60, int(data.get("ws_duration", 10))))
+                _actuate_ws(mode, bri, dur)
+                result["ws"] = f"ON {mode},{bri},{dur}s"
+            else:
+                ws.off()
+                result["ws"] = "OFF"
 
-    append_csv("data/actions.csv", ["time","action","detail"], [
-        time.strftime("%Y-%m-%d %H:%M:%S"), "manual", ";".join(detail)
-    ])
-    return jsonify({"ok": True, "echo": p})
+        # 记录日志
+        append_csv("data/actions.csv", ["time", "action", "detail"], [
+            time.strftime("%Y-%m-%d %H:%M:%S"), "manual", str(result)
+        ])
+
+        return jsonify({"ok": True, "status": result})
+
+    except Exception as e:
+        print("[控制错误]", e)
+        return jsonify({"ok": False, "error": str(e)})
 
 # 摄像头
 @app.route("/camera/start")

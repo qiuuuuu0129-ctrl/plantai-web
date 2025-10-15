@@ -1,31 +1,106 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>设备控制</h1>
+<h1>设备控制中心</h1>
+
+<style>
+  section.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  }
+  button {
+    margin-top: 8px;
+    margin-right: 5px;
+    padding: 8px 14px;
+    border-radius: 6px;
+  }
+  button.secondary {
+    background: #ccc;
+    color: #333;
+  }
+  #ctrlResult {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 15px;
+  }
+</style>
 
 <section class="card">
-  <h3>水泵</h3>
-  <label>时长（秒）：<input type="number" id="pumpDur" value="3" min="1" max="30"></label>
-  <button onclick="sendControl({pump:true, pump_duration:Number($('#pumpDur').value)})">开启</button>
-  <button class="secondary" onclick="sendControl({pump:false})">关闭</button>
+  <h3>💧 水泵</h3>
+  <label>时长（秒）：
+    <input type="number" id="pumpDur" value="3" min="1" max="30">
+  </label>
+  <div>
+    <button onclick="sendControl({pump:true, pump_duration:Number($('#pumpDur').value)})">开启</button>
+    <button class="secondary" onclick="sendControl({pump:false})">关闭</button>
+  </div>
 </section>
 
 <section class="card">
-  <h3>WS2812 光谱</h3>
+  <h3>💡 补光灯</h3>
+  <label>亮度（%）：
+    <input type="number" id="lightBri" value="70" min="0" max="100">
+  </label>
+  <div>
+    <button onclick="sendControl({light:true, brightness:Number($('#lightBri').value)})">开启</button>
+    <button class="secondary" onclick="sendControl({light:false})">关闭</button>
+  </div>
+</section>
+
+<section class="card">
+  <h3>🌈 WS2812 光谱灯</h3>
   <label>模式：
     <select id="wsMode">
-      <option value="white">白</option><option value="red">红</option>
-      <option value="blue">蓝</option><option value="purple">紫</option>
-      <option value="warm">暖白</option><option value="cool">冷白</option>
-      <option value="sunlight">日光</option>
+      <option value="white">白</option>
+      <option value="red">红</option>
+      <option value="green">绿</option>
+      <option value="blue">蓝</option>
+      <option value="yellow">黄</option>
+      <option value="purple">紫</option>
     </select>
   </label>
-  <label>亮度（0-255）：<input type="number" id="wsBri" value="128" min="0" max="255"></label>
-  <label>时长（秒）：<input type="number" id="wsDur" value="10" min="1" max="60"></label>
-  <button onclick="sendControl({ws_enable:true, ws_mode:$('#wsMode').value, ws_brightness:Number($('#wsBri').value), ws_duration:Number($('#wsDur').value)})">
-    设置并开启
-  </button>
-  <button class="secondary" onclick="sendControl({ws_enable:false})">关闭 WS</button>
+  <label>亮度（0-255）：
+    <input type="number" id="wsBri" value="128" min="0" max="255">
+  </label>
+  <label>时长（秒）：
+    <input type="number" id="wsDur" value="10" min="1" max="60">
+  </label>
+  <div>
+    <button onclick="sendControl({
+      ws_enable:true,
+      ws_mode:$('#wsMode').value,
+      ws_brightness:Number($('#wsBri').value),
+      ws_duration:Number($('#wsDur').value)
+    })">设置并开启</button>
+    <button class="secondary" onclick="sendControl({ws_enable:false})">关闭 WS</button>
+  </div>
 </section>
 
-<section id="ctrlResult"></section>
+<section id="ctrlResult"><b>状态：</b>无</section>
+
+<script>
+function $(id){return document.querySelector(id);}
+async function sendControl(payload){
+  $('#ctrlResult').innerHTML = "⏳ 执行中...";
+  try{
+    const res = await fetch("/api/control", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data.ok){
+      $('#ctrlResult').innerHTML = "<b>✅ 成功：</b>" + JSON.stringify(data.status);
+    }else{
+      $('#ctrlResult').innerHTML = "<b>❌ 失败：</b>" + data.error;
+    }
+  }catch(e){
+    $('#ctrlResult').innerHTML = "<b>⚠️ 网络错误：</b>" + e;
+  }
+}
+</script>
+
 {% endblock %}
