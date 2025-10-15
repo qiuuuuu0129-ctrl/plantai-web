@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="{{ theme|default('auto') }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "PlantAI " }}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+  <script defer src="/static/js/app.js"></script>
+  <style>
+    body { font-family: "Microsoft Yahei", sans-serif; margin: 0; background: var(--bg); color: var(--fg);}
+    header { background: #4CAF50; color: white; padding: 10px 20px; display:flex; justify-content:space-between; align-items:center; }
+    nav a { color:white; text-decoration:none; margin:0 10px; }
+    nav a:hover { text-decoration:underline; }
+    main { padding:20px; }
+    footer { text-align:center; padding:10px; color:#888; border-top:1px solid #ccc; }
+    .card { padding:10px; border:1px solid #ccc; border-radius:8px; margin:10px 0; background:white; color:#333; }
+    button { margin:5px; padding:8px 14px; border:none; border-radius:6px; background:#4CAF50; color:white; cursor:pointer; }
+    button.secondary { background:#aaa; }
+    select { padding:5px; margin-left:5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">🌿 PlantAI 植物健康守护系统</div>
+      <nav class="links">
+      <a href="/">仪表盘</a>
+      <a href="/history">历史</a>
+      <a href="/control">控制</a>
+      <a href="/camera">摄像头</a>
+      <a href="/settings">设置</a>
+      <a href="/reports">报告</a>
+      <a href="/logout" class="secondary">退出</a>
+      <label>主题：
+        <select id="themeSelect">
+          <option value="auto">随系统</option>
+          <option value="light">白天</option>
+          <option value="dark">夜间</option>
+        </select>
+      </label>
+    </nav>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>© 2025 PlantAI 人间草木</footer>
+</body>
+</html>
+

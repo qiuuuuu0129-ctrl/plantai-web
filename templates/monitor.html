@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>环境监测面板</h2>
+<div id="cards" class="cards"></div>
+
+<section class="chart-section">
+  <canvas id="tempChart"></canvas>
+</section>
+
+<script>
+async function loadSensors() {
+  const res = await fetch('/sensors');
+  const data = await res.json();
+  const box = document.getElementById('cards');
+  box.innerHTML = `
+    <div class="card">🌡 温度：${data.temperature_c} ℃</div>
+    <div class="card">💧 湿度：${data.humidity_pct} %</div>
+    <div class="card">☀️ 光照：${data.light_lux} lux</div>
+    <div class="card">🌱 土壤湿度：${data.soil_moisture_pct} %</div>
+  `;
+}
+loadSensors();
+setInterval(loadSensors, 30000); // 每半分钟刷新
+</script>
+{% endblock %}

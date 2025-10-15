@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>系统设置</h1>
+
+<section class="card">
+  <h3>主题与采集周期</h3>
+  <label>主题：
+    <select id="setTheme">
+      <option value="auto">随系统</option><option value="light">白天</option><option value="dark">夜间</option>
+    </select>
+  </label>
+  <label>采集周期（分钟）：
+    <input type="number" id="setInterval" value="30" min="1" max="1440">
+  </label>
+  <button id="btnSaveBasic">保存</button>
+</section>
+
+<section class="card">
+  <h3>自动控制策略</h3>
+  <label>启用：
+    <select id="acEnabled"><option value="true">是</option><option value="false">否</option></select>
+  </label>
+  <label>夜间静音（起止小时，例如23,7）：
+    <input id="acQuiet" value="23,7">
+  </label>
+  <label>土壤阈值（%）：
+    <input type="number" id="acSoil" value="35" min="1" max="100">
+  </label>
+  <label>浇水时长（秒）：
+    <input type="number" id="acPump" value="3" min="1" max="30">
+  </label>
+  <label>目标光照（lux）：
+    <input type="number" id="acLux" value="350">
+  </label>
+ 
+  <h4>WS2812</h4>
+  <label>启用：
+    <select id="acWsEn"><option value="true">是</option><option value="false">否</option></select>
+  </label>
+  <label>模式：
+    <select id="acWsMode">
+      <option value="white">白</option><option value="red">红</option>
+      <option value="blue">蓝</option><option value="purple">紫</option>
+      <option value="warm">暖白</option><option value="cool">冷白</option>
+      <option value="sunlight">日光</option>
+    </select>
+  </label>
+  <label>亮度（0-255）：<input type="number" id="acWsBri" value="128" min="0" max="255"></label>
+  <label>时长（秒）：<input type="number" id="acWsDur" value="10" min="1" max="60"></label>
+  <button id="btnSaveAC">保存策略</button>
+</section>
+
+<section id="saveResult"></section>
+{% endblock %}

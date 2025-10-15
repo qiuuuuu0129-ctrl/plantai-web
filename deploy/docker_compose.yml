@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  plantai:
+    build: .
+    container_name: plantai
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./checkpoints:/app/checkpoints
+      - ./data:/app/data
+      - ./configs:/app/configs
+    environment:
+      - PLANTAI_API_KEY=${PLANTAI_API_KEY}
+      - PLANTAI_HISTORY_DB=/app/data/history.db
+      - PLANTAI_HISTORY_CSV=/app/data/history.csv
+      - PLANTAI_MODEL_ONNX=/app/checkpoints/onnx/best_model.onnx
+      - PLANTAI_MODEL_TFLITE=/app/checkpoints/tflite/model.tflite
+      - PLANTAI_LABELS_TXT=/app/deploy/label.txt
+      - PLANTAI_TRAIN_CFG=/app/configs/train_config.yaml
+      - PLANTAI_CFG=/app/configs/plantai_config.yaml

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>历史数据</h1>
+<div class="filters">
+  <label>起始日期：<input type="date" id="since"></label>
+  <label>结束日期：<input type="date" id="until"></label>
+  <button id="btnQuery">查询</button>
+  <a class="secondary" href="/api/history/download">下载 CSV</a>
+  <button id="btnPdf">导出 PDF</button>
+</div>
+<section class="chart-section"><canvas id="historyChart"></canvas></section>
+<section>
+  <table class="tbl" id="histTable">
+    <thead><tr>
+      <th>时间</th><th>温度°C</th><th>湿度%</th><th>光照lux</th>
+      <th>CO₂ ppm</th><th>TVOC ppb</th><th>土壤湿度%</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>报告中心</h1>
+<div class="filters">
+  <label>起始日期：<input type="date" id="rpSince"></label>
+  <label>结束日期：<input type="date" id="rpUntil"></label>
+  <button id="btnGen">生成 PDF 报告</button>
+</div>
+<div id="rpResult"></div>
+{% endblock %}

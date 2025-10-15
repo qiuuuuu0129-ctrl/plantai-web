@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>设备控制</h1>
+
+<section class="card">
+  <h3>水泵</h3>
+  <label>时长（秒）：<input type="number" id="pumpDur" value="3" min="1" max="30"></label>
+  <button onclick="sendControl({pump:true, pump_duration:Number($('#pumpDur').value)})">开启</button>
+  <button class="secondary" onclick="sendControl({pump:false})">关闭</button>
+</section>
+
+<section class="card">
+  <h3>WS2812 光谱</h3>
+  <label>模式：
+    <select id="wsMode">
+      <option value="white">白</option><option value="red">红</option>
+      <option value="blue">蓝</option><option value="purple">紫</option>
+      <option value="warm">暖白</option><option value="cool">冷白</option>
+      <option value="sunlight">日光</option>
+    </select>
+  </label>
+  <label>亮度（0-255）：<input type="number" id="wsBri" value="128" min="0" max="255"></label>
+  <label>时长（秒）：<input type="number" id="wsDur" value="10" min="1" max="60"></label>
+  <button onclick="sendControl({ws_enable:true, ws_mode:$('#wsMode').value, ws_brightness:Number($('#wsBri').value), ws_duration:Number($('#wsDur').value)})">
+    设置并开启
+  </button>
+  <button class="secondary" onclick="sendControl({ws_enable:false})">关闭 WS</button>
+</section>
+
+<section id="ctrlResult"></section>
+{% endblock %}

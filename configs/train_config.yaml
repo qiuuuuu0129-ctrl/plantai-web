@@ -1,0 +1,27 @@
+data:
+  metadata_csv: "data/logs/metadata.csv"   # 由 gather_local/dataset_builder 产出
+  label_by: "plant"                        # 或 "plant+disease"
+preprocess:
+  resize: {enabled: true, short_side: 256, maintain_aspect: true}
+  normalize: {enabled: true, mean: [0.485,0.456,0.406], std: [0.229,0.224,0.225]}
+  augmentation:
+    train:
+      - {name: random_flip, prob: 0.5}
+      - {name: random_rotation, max_deg: 10, prob: 0.2}
+      - {name: color_jitter, brightness: 0.2, contrast: 0.2, saturation: 0.1, hue: 0.03, prob: 0.2}
+
+train:
+  image_size: 224
+  batch_size: 32
+  epochs: 20              # 可以稍增到20轮以提高收敛
+  lr: 3.0e-4
+  num_workers: 4
+  backbone: "resnet18"
+  optimizer: "adam"       # 明确优化器
+  weight_decay: 1.0e-4    # 稳定训练
+  save_dir: "checkpoints/pytorch"
+  seed: 42
+  early_stopping: true    # 若脚本支持，可添加提前停止
+  scheduler:
+    type: "cosine"        # 或 "step"
+    warmup_epochs: 1

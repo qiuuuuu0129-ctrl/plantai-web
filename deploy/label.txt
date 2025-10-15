@@ -1,0 +1,4 @@
+healthy
+dry
+yellow
+diseased

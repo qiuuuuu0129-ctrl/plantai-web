@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>摄像头实时预览</h2>
+<div class="cam-ops">
+  <button id="btnStart">启动摄像头</button>
+  <button id="btnStop" class="secondary">停止摄像头</button>
+</div>
+<div class="cam-view">
+  <img id="stream" src="/video_feed" alt="camera stream" style="width:100%;max-width:640px;border:1px solid #ccc;border-radius:8px;">
+</div>
+<script>
+document.getElementById("btnStart").onclick = ()=>fetch('/camera/start');
+document.getElementById("btnStop").onclick = ()=>fetch('/camera/stop');
+</script>
+{% endblock %}
+

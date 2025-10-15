@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="dashboard">
+  <h1>🌿 PlantAI 环境监测面板</h1>
+  <p class="subtitle">实时查看设备状态与环境数据</p>
+
+  <!-- 设备状态卡片 -->
+  <div id="sensor-cards" class="cards-grid">
+    <div class="card"><h3>🌡 温度</h3><p id="temp">-- °C</p></div>
+    <div class="card"><h3>💧 湿度</h3><p id="humi">-- %</p></div>
+    <div class="card"><h3>☀️ 光照</h3><p id="light">-- lux</p></div>
+    <div class="card"><h3>🌱 土壤湿度</h3><p id="soil">-- %</p></div>
+    <div class="card"><h3>💨 空气质量</h3><p id="air">--</p></div>
+  </div>
+
+  <!-- 图表 -->
+  <section class="chart-section">
+    <canvas id="tempChart"></canvas>
+  </section>
+</section>
+
+<button onclick="fetchSensors()">立即刷新</button>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let tempData = [], humiData = [], labels = [];
+
+const chartCtx = document.getElementById('tempChart').getContext('2d');
+const tempChart = new Chart(chartCtx, {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      { label: '温度 (°C)', data: tempData, borderColor: 'rgb(255,99,132)', fill: false },
+      { label: '湿度 (%)', data: humiData, borderColor: 'rgb(54,162,235)', fill: false }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { labels: { color: getComputedStyle(document.body).color } }
+    },
+    scales: {
+      x: { ticks: { color: getComputedStyle(document.body).color } },
+      y: { ticks: { color: getComputedStyle(document.body).color } }
+    }
+  }
+});
+
+async function fetchSensors() {
+  try {
+    const res = await fetch('/api/sensors');
+    const d = await res.json();
+    document.getElementById('temp').innerText = (d.temperature_c ?? '--') + ' °C';
+    document.getElementById('humi').innerText = (d.humidity_pct ?? '--') + ' %';
+    document.getElementById('light').innerText = (d.light_lux ?? '--') + ' lux';
+    document.getElementById('soil').innerText = (d.soil_moisture_pct ?? '--') + ' %';
+    document.getElementById('air').innerText = d.eCO2_ppm ? 
+      `${d.eCO2_ppm} ppm / ${d.TVOC_ppb} ppb` : '暂无数据';
+
+    // 更新时间序列图
+    const now = new Date().toLocaleTimeString();
+    labels.push(now);
+    tempData.push(d.temperature_c ?? null);
+    humiData.push(d.humidity_pct ?? null);
+    if (labels.length > 20) { labels.shift(); tempData.shift(); humiData.shift(); }
+    tempChart.update();
+  } catch (e) {
+    console.error("❌ 无法获取传感器数据:", e);
+  }
+}
+
+fetchSensors();
+setInterval(fetchSensors, 30000);
+</script>
+
+<style>
+.dashboard { text-align: center; margin-top: 1rem; }
+.subtitle { color: gray; margin-bottom: 1rem; }
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.card {
+  background: var(--card-bg, #f6f6f6);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+.card:hover { transform: scale(1.03); }
+.card h3 { margin: 0.5rem 0; color: #2a7a46; }
+.chart-section { width: 90%; margin: auto; }
+</style>
+{% endblock %}

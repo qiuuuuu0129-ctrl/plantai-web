@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="{{ theme|default('auto') }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>登录 - PlantAI</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="container">
+  <div class="card" style="max-width:360px;margin:80px auto;">
+    <h2>登录 PlantAI</h2>
+    {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+    <form method="post">
+      <label>用户名：<input name="username" required></label><br><br>
+      <label>密　码：<input name="password" type="password" required></label><br><br>
+      <button type="submit">登录</button>
+    </form>
+    <p class="muted">默认账号：admin / admin123（首次自动创建）</p>
+  </div>
+</body>
+</html>

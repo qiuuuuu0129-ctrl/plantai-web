@@ -1,0 +1,13 @@
+[Unit]
+Description=PlantAI Flask Service
+After=network.target
+
+[Service]
+WorkingDirectory=/home/pi/PLANTAI-WEB
+Environment="PLANTAI_API_KEY=replace-me"
+ExecStart=/usr/bin/python3 /home/pi/PLANTAI-WEB/app.py
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

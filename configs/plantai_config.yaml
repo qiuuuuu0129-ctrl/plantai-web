@@ -1,0 +1,55 @@
+hardware:
+  pump_pin: 23               # 继电器 IN 脚 (BCM)
+  light_pin: 24              # 普通补光（如需）
+  ws2812:
+    enabled: true
+    led_count: 18
+    gpio_pin: 18             # WS2812 默认 PWM 引脚
+    brightness: 64
+
+sensors:
+  sht30:
+    enabled: true
+    i2c_addr: 0x44          # SHT30/31 默认
+  bh1750:
+    enabled: true
+    i2c_addr: 0x23
+  sgp30:
+    enabled: true           # TVOC/CO2eq
+  soil:
+    enabled: true
+    type: "ads1115"         # "gpio" | "ads1115"
+    adc_channel: 0
+    dry_mv: 2600
+    wet_mv: 1200
+
+storage:
+  db_path: "data/history.db"
+  csv_path: "data/history.csv"
+
+theme: "auto"                     # auto|light|dark
+log_interval_min: 30              # 历史记录采样周期（分钟）
+history_csv: "data/history.csv"
+
+camera:
+  use_libcamera: true
+  index: 0                        # /dev/video0
+
+auto_control:
+  enabled: true
+  quiet_hours: [23, 7]            # 夜间静音时段（23点-次日7点不浇水/不强制补光）
+  soil_low_threshold: 35          # 土壤湿度低于此阈值将浇水（%）
+  pump_duration_s: 3              # 每次浇水秒数（安全范围1~30）
+  light_target_lux: 350           # 目标光照（lux）
+  normal_light_brightness: 70     # 普通补光灯的百分比亮度（0~100）
+  ws2812:
+    enabled: false                # 若为true，优先使用WS2812作为补光
+    mode: "white"                 # white/red/blue/purple/warm/cool/sunlight
+    brightness: 128               # 0~255
+    duration_s: 10                # 开启时长，秒（安全范围1~60）
+
+users:
+  default_admin:
+    username: "shuang"
+    password: "raspberry"          # 首次启动时如无用户，将自动创建这个管理员账号
+
